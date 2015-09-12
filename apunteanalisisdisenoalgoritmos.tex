@@ -1,0 +1,209 @@
+\documentclass[12pt]{article}
+\usepackage{amssymb,amsmath,latexsym,cancel}
+\usepackage[usenames,dvipsnames]{pstricks}
+\usepackage{epsfig}
+\usepackage{pst-grad} % For gradients
+\usepackage{pst-plot} % For axes
+% Page length commands go here in the preamble
+\setlength{\oddsidemargin}{-0.25in} % Left margin of 1 in + 0 in = 1 in
+\setlength{\textwidth}{7in}   % Right margin of 8.5 in - 1 in - 6.5 in = 1 in
+\setlength{\topmargin}{-.75in}  % Top margin of 2 in -0.75 in = 1 in
+\setlength{\textheight}{9.2in}  % Lower margin of 11 in - 9 in - 1 in = 1 in
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+
+\renewcommand{\baselinestretch}{1.5} % 1.5 denotes double spacing. Changing it will change the spacing
+
+\setlength{\parindent}{0in} 
+\begin{document}
+\title{Diseno y Analisis de Algoritmos}
+\author{Javier Liberman}
+\date{Primavera 2015}
+\maketitle
+\begin{center}
+Este apunte es realizado en base a las clases de Gonzalo Navarro
+\end{center}
+\newpage
+\section{Cotas Inferiores de Problemas}
+
+Para calcular cotas inferiores de problemas, es decir, mostrar que un problema es dificil, se puede ocupar tres tecnicas: \textbf{Adversario, Reduccion o Teoria de la informacion.}
+
+\subsection {Tecnica del adversario}
+
+Se considera que el algoritmo es ejecutado contra un adversario que intenta que el algoritmo se desempene lo peor posible. El adversario no puede hacer `trampa', o sea, no puede contradecir las indicaciones del problema.
+
+\subsubsection {Busqueda en un arreglo ordenado}
+
+La menor cantidad de accesos que se puede hacer es $n$. El adversario puede guardarse el elemento que se busca hasta el final.
+
+\subsubsection {Encontrar el minimo en $A[1, n]$}
+
+Tanto si se comparan secuencialmente, como si se comparan al estilo de un torneo de tenis, se realizan $n-1$ comparaciones. Si se modela el problema como un grafo, donde cada nodo es un elemento, y una arista es una comparacion, resulta claro que se necesita al menos un grafo conexo. Y para conectar un grafo de $n$ nodos se necesitan $n-1$ aristas.
+Suponiendo una tupla $(a,b,c)$ donde:
+\begin{align}
+a &= \text{Numero de elementos nunca comparados} \\
+b &= \text{Numero de elementos comparados alguna vez y siempre menores} \\
+c &= \text{Numero de elementos comparados alguna vez y alguna vez mayores}
+\end{align}
+
+Todo algorimo que desee responder quien es el mayor, parte y termina
+\[
+(n,0,0) \rightarrow (0,1,n-1)
+\]
+
+\begin{table}[htbp]
+\centering
+\caption{Tabla Adversario}
+\begin{tabular}{|l|l|l|l|}
+\hline
+ & $a$ & $b$ & $c$ \\ \hline
+$a$ & $(a-2,b+1,c)$ & $(a-1,b,c+1)$ & $(a-1,b+1,c),\cancel(a-1,b,c+1)$ \\ \hline
+$b$ &  & $(a,b-1,c+1)$ & $(a,b,c),\cancel{(a,b-1,c+1)}$ \\ \hline
+$c$ &  &  & $(a,b,c)$ \\ \hline
+\end{tabular}
+\label{}
+\end{table}
+
+Aquellas opciones tachadas son las que el adversario elige evitar sin ser inconsistente.
+Si se sigue el camino $(a,a)\rightarrow(a,b)$ se obtiene el algoritmo de elegir el primero y luego iterar comparando sobre el resto.
+Si se sigue el camino $(a,a)$ hasta que no queden mas $a$. Luego $(b,b)$ hasta que no queden mas $b$, se obtiene el algoritmo del torneo de tenis.
+
+\subsubsection {Encontrar el maximo y el minimo de $A[1,n]$}
+
+Ya se sabe que se puede encontrar el maximo con $n-1$ comparaciones. Y considerando que el arreglo es mas grande que uno, el maximo no es el minimo, luego quedan $n-1$ elementos y se puede encontrar el minimo con $n-1$ comparaciones. Dado que se construyo el algoritmo para encontrar el maximo y minimo con $2n-3$ comparaciones, se puede afirmar que existe una cota superior igual a $2n-3$
+
+Se define la tupla $(a,b,c,d)$ como:
+\begin{align}
+a &= \text{Numero de elementos nunca comparados} \\
+b &= \text{Numero de elementos comparados alguna vez y siempre menores} \\
+c &= \text{Numero de elementos comparados alguna vez y siempre mayores} \\
+d &= \text{Numero de elementos comparados alguna vez y alguna vez mayores y otra menores} 
+\end{align}
+
+El algoritmo debe partir y terminar
+\[
+(n,0,0,0) \rightarrow (0,1,1,n-2)
+\]
+
+\begin{table}[htbp]
+\centering
+\tiny
+\caption{Tabla Adversario}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+ & $a$ & $b$ & $c$ & $d$ \\ \hline
+$a$ & $(a-2,b+1,c+1,d)$ & $(a-1, b, c, d+1), (a-1, b, c+1,d)$ & $\cancel{(a-1,b,c,d+1)}, (a-1, b+1, c, d)$ & $(a-1, b+1,c,d),(a-1,b,c+1,d)$ \\ \hline
+$b$ &  & $(a,b-1,c,d+1)$ & $(a,b,c,d),\cancel{(a,b-1,c-1,d+2)}$ & $(a,b,c,d), \cancel{(a,b-1,c,d+1)}$ \\ \hline
+$c$ &  &  & $(a,b,c-1,d+1)$ & $(a,b,c,d),\cancel{(a,b,c-1,d+1)}$ \\ \hline
+$d$ &  &  &  & $(a,b,c,d)$ \\ \hline
+\end{tabular}
+\label{}
+\end{table}
+
+
+Se deduce de la tabla que una cota inferior es $\lceil n/2 \rceil +n-2$.
+Haciendo un torneo y luego entre los perdedores y otro torneo entre los ganadores se obtiene el algoritmo produciendo una cota superior. Luego como la cota inferior y superior obtenidas son iguales, se deduce que ambas cotas son lo mejor posible.
+
+
+\subsubsection {Maximo y segundo maximo}
+
+Esta calculado que lo mejor que se puede hacer es:
+\[
+n-1+log_2(n)
+\]
+Y se realiza haciendo un torneo y luego un torneo entre los perdedores con el ganador.
+No es posible hacer una tabla para este algoritmo. La estrategia que se utiliza es la de la teoria de la informacion.
+
+\section {Reduccion}
+
+Si el problema $A$ tiene una cota inferior de $f(n)$ y se puede reducir a el problema $B$ en tiempo $o(f(n))$ entonces $B$ tiene una cota inferior de $\Omega(f(n))$. Siempre se debe reducir el problema conocido al problema desconocido y \textbf{no al revez} (Para calcular cotas inferiores)
+
+\subsubsection {Capsula convexa - Convex hull}
+
+En el problema de la capsula convexa, se tiene un set de puntos en 2D y se debe encontrar la capsula que los contiene en sentido horario.
+
+\begin{center}
+\begin{pspicture}(0,-1.44)(3.68,1.44)
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](1.24,0.2){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](1.64,0.6){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](2.04,0.2){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](1.64,-0.6){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](2.84,-0.6){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](0.44,1.0){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](0.04,-1.0){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](2.84,0.6){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](3.64,-0.2){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](1.64,-1.4){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](0.04,0.2){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](2.04,1.4){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](3.24,-1.4){0.04}
+\psline[linecolor=black, linewidth=0.04](0.44,1.0)(2.04,1.4)(2.84,0.6)(3.64,-0.2)(3.24,-1.4)(1.64,-1.4)(0.04,-1.0)(0.04,0.2)(0.44,1.0)
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](0.84,-0.6){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](0.84,0.6){0.04}
+\end{pspicture}
+\end{center}
+
+Sabiendo que ordenar es $\Omega(nlog(n))$ se puede aplicar la reduccion suponiendo que se tiene un arreglo:
+\[
+a_1, a_2, a_3, ... , a_n
+\]
+Se puede transformar en puntos 2D de la siguiente forma:
+\[
+(a_1,a_1^2),(a_2,a_2^2),(a_3,a_3^2), ... ,(a_n, a_n^2)
+\]
+
+
+\begin{pspicture}(0,-6.0319614)(11.0,6.0319614)
+
+\pscustom[linecolor=black, linewidth=0.04]
+{
+\newpath
+\moveto(12.0,-2.3680384)
+}
+\pscustom[linecolor=black, linewidth=0.04]
+{
+\newpath
+\moveto(13.6,0.8319617)
+}
+\pscustom[linecolor=black, linewidth=0.04]
+{
+\newpath
+\moveto(11.2,2.4319618)
+}
+\pscustom[linecolor=black, linewidth=0.04]
+{
+\newpath
+\moveto(5.6,2.8319616)
+}
+\pscustom[linecolor=black, linewidth=0.04]
+{
+\newpath
+\moveto(4.8,-2.7680383)
+}
+
+\pscustom[linecolor=black, linewidth=0.04]
+{
+\newpath
+\moveto(4.0,-0.76803833)
+}
+
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](7.1,-4.868038){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](8.0,-3.5680382){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](10.0,2.4319618){0.04}
+\pscircle[linecolor=black, linewidth=0.04, dimen=outer](9.0,-1.5680383){0.04}
+\psline[linecolor=black, linewidth=0.04](7.1,-4.868038)(8.0,-3.5680382)(9.0,-1.5680383)(10.0,2.4319618)(7.1,-4.868038)(7.1,-4.868038)
+\psdots[linecolor=black, dotsize=0.4](7.1,-4.868038)
+\psdots[linecolor=black, dotsize=0.4](8.0,-3.6680384)
+\psdots[linecolor=black, dotsize=0.4](9.0,-1.5680383)
+\psdots[linecolor=black, dotsize=0.4](10.0,2.4319618)
+\end{pspicture}
+
+
+
+
+
+Es claro que se obtiene una capsula que contiene todos los puntos.
+
+
+\end{document}
