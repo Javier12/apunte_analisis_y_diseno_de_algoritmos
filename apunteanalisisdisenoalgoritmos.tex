@@ -201,9 +201,92 @@ Se puede transformar en puntos 2D de la siguiente forma:
 
 
 
-
-
 Es claro que se obtiene una capsula que contiene todos los puntos.
 
+\subsection{Colas de prioridad}
+
+Con un heap binario se tienen las siguientes operaciones y costos:
+\begin{align}
+heapify & O(n) \\
+insert & O(log(n)) \\
+extractMin & O(log(n))
+\end{align}
+Con un heap fibonacci se tiene:
+
+\begin{align}
+heapify & O(n) \\
+insert & O(1) \\
+extractMin & O(log(n))
+\end{align}
+
+Es posible tener una cola de prioridad que:
+
+\begin{align}
+heapify & O(n) \\
+insert & O(log(n)) \\
+extractMin & O(1)
+\end{align}
+
+O una cola que haga:
+
+\begin{align}
+heapify & O(1) \\
+insert & O(1) \\
+extractMin & O(1)
+\end{align}
+
+Ninguna de estas dos son posibles. Si fueran posibles, se podria ordenar en tiempo n. Bastaria con realizar heapify sobre el arreglo y luego ir extrallendo el minimo y se tendria el arreglo ordenado.
+
+\subsection{Problema de 3SUM}
+
+Dados $n$ numeros $x_1, x_2, ... , x_n$ se pueden elegir $a,b,c$ con repeticion permitida tal que $a + b + c = 0$. Vale notar que no pueden haber ceros dentro de los $n$ numeros, sino, resolver el problema seria trivial.
+
+El problema tiene orden $n^3$ con fuerza bruta.
+Si se suman todos los pares y luego se recorre la lista para encontrar un inverso el problema tiene orden $n^2$
+
+Mucho tiempo existio la conjetura que el orden de este problema era $n^2$. Gramlund \& Pettie descubren que el orden de este problema es $\Omega(\frac{2}{3}\frac{n^2}{\frac{log(n)}{log(log(n))}})$
+
+La nueva conjetura es que el orden del problema es $\Omega(n^2 - \epsilon)$ para todo $\epsilon$ mayor que $0$. (revisar omega o chica)
+
+Se dice en demostraciones que un problema es 3SUM-hard para decir que es al menos tan dificil como 3SUM. Se asumia que se referia a que el problema era $n^2$. A pesar de que no era, las demostraciones no quedan invalidas.
+
+\subsection{3-colinear}
+
+Dados $n$ puntos en el plano, existen $3$ puntos que sean colineales?
+
+Sea $x_1, ... , x_n$ un problema de 3SUM. Por cada $x_i$ se crean $3$ puntos.
+
+\begin{align}
+(0, x_i) \\
+(1, \frac{x_i}{2}) \\
+(2, x_i)
+\end{align}
+
+Sean $3$ puntos colineales: $(0,a), (1,b), (2,c)$
+
+$b = \frac{a+b}{2}$
+
+\begin{align}
+(0,a) & x_i \\
+(1,b) & \frac{x_j}{2} \\
+(2,c) & x_k \\
+\frac{-x_j}{2} &= \frac{x_i + x_k}{2} \\
+x_i + x_j + x_k &= 0
+\end{align}
+
+Se transforma 3SUM a 3-Colinear en tiempo lineal. Y con 3-Colinear resuelto, se obtiene la solucion de 3SUM inmediatamente. Considerando tambien que 3SUM no es posible resolverlo en menos de $\Omega(n)$ dado que por el adversario, se necesita ver al menos todo el input.
+
+La reduccion solo funciona si el costo de la transformacion es una cota inferior conocida del otro problema.
+
+\section{Teoria de la Informacion}
+
+Es facil analogar el principio de la teoria de la informacion con el juego de las 20 preguntas. Si conozco 9 personas, no me pueden ganar siempre con 3 preguntas.
+
+Para formalizar, se puede suponer que se tiene un arreglo ordenado desde $1$ a $n$. Si solamente se realizan preguntas binarias se tiene que poder responder desde $1$ hasta $n$. Es decir al menos se tienen que realizar $ \lceil (log_2n) \rceil $
+
+\subsection{Sort}
+
+Un algoritmo de ordenamiento haga lo que haga compara elementos de un arreglo, va haciendo intercambios y en algun momento termina. El arreglo contiene siempre los mismo numeros. Son los numeros del $1$ al $n$ reordenados. 
+Si se tiene un arreglo con dos permutaciones $\pi_1, \pi_2$, cuando se le aplica la inversa de la permutacion se obtiene la identidad. Como hay $n!$ permutaciones distintas, se debe hacer $log_2(n)!$ preguntas binarias para elegir los cambios a hacer en el arreglo.
 
 \end{document}
